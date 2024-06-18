@@ -6,6 +6,7 @@ import User from '../components/User'
 import Home from '../components/Home'
 import TopicList from '../components/TopicList'
 import ArticleList from "../components/ArticleList";
+import Article from "../components/Article"
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/topics" element={<TopicList />} />
           <Route path="/articles" element={<ArticleList/>} />
+          <Route path="/articles/:article_id" element={<Article />}/>
         </Routes>
       </div>
     </BrowserRouter>

@@ -16,7 +16,7 @@ const ArticleCard = ({ articleList }) => {
                 <Card.Text>Author: {article.author}</Card.Text>
                 <Card.Text>Comment count: {article.comment_count}</Card.Text>
                 <Card.Text>Votes: {article.votes}</Card.Text>
-                <Button variant="primary">Read Article</Button>
+                <Button href={`/articles/${article.article_id}`}variant="primary">Read Article</Button>
               </Card.Body>
             </Card>
           </li>

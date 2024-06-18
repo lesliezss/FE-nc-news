@@ -5,7 +5,6 @@ import ArticleList from "../components/ArticleList";
 const Home =()=>{
     return(
         <div>
-            <p>Home</p>
             <ArticleList />
         </div>
     )
