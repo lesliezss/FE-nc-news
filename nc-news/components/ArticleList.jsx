@@ -1,31 +1,31 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ArticleCard from "./ArticleCard";
-import Spinner from 'react-bootstrap/Spinner';
+import Spinner from "react-bootstrap/Spinner";
+import api from "../utils/api";
 
 const ArticleList = () => {
   const [articleList, setArticleList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true)
-    axios
-      .get("https://nc-news-server-utuo.onrender.com/api/articles")
-      .then((response) => {
-        setArticleList(response.data.articles);
-        setIsLoading(false)
+    setIsLoading(true);
+    api.getArticleList()
+      .then((articles) => {
+        setArticleList(articles);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  if(isLoading){
+  if (isLoading) {
     return (
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      );
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    );
   }
 
   return (

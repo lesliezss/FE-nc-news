@@ -3,33 +3,48 @@ import axios from "axios";
 import { Routes, Route, useParams } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import api from "../utils/api";
 
 const Article = () => {
   const [article, setArticle] = useState({});
   const [comments, setComments] = useState([]);
+  const [articleVotes, setArticleVotes] = useState(0);
 
   let { article_id } = useParams();
 
   useEffect(() => {
-    axios
-      .get(
-        `https://nc-news-server-utuo.onrender.com/api/articles/${article_id}`
-      )
-      .then((response) => {
-        setArticle(response.data.article);
-      });
-  }, []);
+    api.getArticle(article_id).then((data) => {
+      setArticle(data.article);
+      setArticleVotes(data.article.votes);
+    });
+    api.getComments(article_id).then((comments) => {
+      setComments(comments);
+    });
+  }, [article_id]);
 
-  useEffect(() => {
+  const handleUpvote = () => {
+    setArticleVotes((currentVotes) => currentVotes + 1);
     axios
-      .get(
-        `https://nc-news-server-utuo.onrender.com/api/articles/${article_id}/comments`
+      .patch(
+        `https://nc-news-server-utuo.onrender.com/api/articles/${article_id}`,
+        { inc_votes: 1 }
       )
-      .then((response) => {
-        setComments(response.data.comments);
-        console.log(comments);
+      .catch((error) => {
+        console.log(error);
       });
-  }, []);
+  };
+
+  const handleDownvote =()=>{
+    setArticleVotes((currentVotes) => currentVotes - 1);
+    axios
+      .patch(
+        `https://nc-news-server-utuo.onrender.com/api/articles/${article_id}`,
+        { inc_votes: -1 }
+      )
+      .catch((error) => {
+        console.log(error);
+      })
+  }
 
   return (
     <>
@@ -40,14 +55,17 @@ const Article = () => {
         <p>{article.author}</p>
         <img src={article.article_img_url} />
         <p>{article.body}</p>
-        <p>Votes: {article.votes}</p>
+
+        <p>Votes: {articleVotes}</p>
+        <button onClick={handleUpvote}>Up vote</button>
+
+        <button onClick={handleDownvote}>Down vote</button>
       </div>
 
       <div className="comment">
         <h3>Comments:</h3>
 
         {comments.map((comment) => {
-          console.log(comment);
           return (
             <Card key={comment.comment_id}>
               <Card.Body>
