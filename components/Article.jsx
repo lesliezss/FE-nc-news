@@ -4,11 +4,14 @@ import { Routes, Route, useParams } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import api from "../utils/api";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
 
 const Article = () => {
   const [article, setArticle] = useState({});
   const [comments, setComments] = useState([]);
   const [articleVotes, setArticleVotes] = useState(0);
+  const [newCommentText, setNewCommentText] = useState("");
 
   let { article_id } = useParams();
 
@@ -24,27 +27,41 @@ const Article = () => {
 
   const handleUpvote = () => {
     setArticleVotes((currentVotes) => currentVotes + 1);
-    axios
-      .patch(
-        `https://nc-news-server-utuo.onrender.com/api/articles/${article_id}`,
-        { inc_votes: 1 }
-      )
-      .catch((error) => {
-        console.log(error);
-      });
+    api.patchUpvote(article_id).catch((error) => {
+      console.log(error);
+    });
   };
 
-  const handleDownvote =()=>{
+  const handleDownvote = () => {
     setArticleVotes((currentVotes) => currentVotes - 1);
-    axios
-      .patch(
-        `https://nc-news-server-utuo.onrender.com/api/articles/${article_id}`,
-        { inc_votes: -1 }
-      )
-      .catch((error) => {
-        console.log(error);
-      })
-  }
+    api.patchDownvote(article_id).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const handleChange = (event) => {
+    setNewCommentText(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    setComments((currentComments) => [
+      { body: newCommentText, author: "grumpy19" },
+      ...currentComments,
+    ]);
+
+    api.postComment(article_id, newCommentText)
+    .catch((error) => {
+      console.error("Failed to post comment:", error);
+      alert("Failed to post comment. Please try again.");
+      setComments((currentComments) =>
+        currentComments.filter((comment) => comment.body !== newCommentText)
+      );
+    });
+    
+    setNewCommentText("");
+  };
 
   return (
     <>
@@ -62,9 +79,27 @@ const Article = () => {
         <button onClick={handleDownvote}>Down vote</button>
       </div>
 
-      <div className="comment">
+      <div className="post-comment">
         <h3>Comments:</h3>
+        <Form onSubmit={handleSubmit}>
+          <FloatingLabel
+            controlId="floatingTextarea2"
+            label="Post your comment:"
+          >
+            <Form.Control
+              required
+              type="text"
+              onChange={handleChange}
+              value={newCommentText}
+              placeholder="Leave a comment here"
+              style={{ height: "100px" }}
+            />
+          </FloatingLabel>
+          <button>Submit</button>
+        </Form>
+      </div>
 
+      <div className="comment">
         {comments.map((comment) => {
           return (
             <Card key={comment.comment_id}>
