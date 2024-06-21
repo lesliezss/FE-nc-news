@@ -37,8 +37,6 @@ const patchDownvote = (article_id) => {
 
 const postComment = (article_id, newCommentText) => {
   const postBody = { body: newCommentText, username: "grumpy19" };
-  console.log('Sending request with payload:', postBody);
-
   return ncNewsApi
     .post(`/articles/${article_id}/comments`, postBody)
     .then(({ data }) => {
@@ -47,6 +45,10 @@ const postComment = (article_id, newCommentText) => {
     });
 };
 
+const deleteComment =(comment_id) =>{
+  return ncNewsApi.delete(`/comments/${comment_id}`)
+}
+
 export default {
   getArticleList,
   getArticle,
@@ -54,4 +56,5 @@ export default {
   patchUpvote,
   patchDownvote,
   postComment,
+  deleteComment
 };

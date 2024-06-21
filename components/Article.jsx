@@ -45,22 +45,59 @@ const Article = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const newComment = {
+      body: newCommentText,
+      author: "grumpy19",
+      votes: 0,
+      comment_id: 9999999,
+    };
+    setComments((currentComments) => [newComment, ...currentComments]);
 
-    setComments((currentComments) => [
-      { body: newCommentText, author: "grumpy19" },
-      ...currentComments,
-    ]);
+    api
+      .postComment(article_id, newCommentText)
+      // .then((response) => {
+      //   console.log(response);
+      // //   //replace the hard coded comment with the real comment object from database
+      // //   setComments((currentComments) => {
+      // //     const updatedComments = currentComments.filter(
+      // //       (comment) => comment.comment_id !== 9999999
+      // //     );
+      // //     return [...updatedComments, response];
+      // //   });
+      // })
+      .catch((error) => {
+        console.error("Failed to post comment:", error);
+        alert("Failed to post comment. Please try again.");
+        setComments((currentComments) =>
+          //need to add more verification, ie. comment.author
+          currentComments.filter((comment) => comment.body !== newCommentText)
+        );
+      });
 
-    api.postComment(article_id, newCommentText)
-    .catch((error) => {
-      console.error("Failed to post comment:", error);
-      alert("Failed to post comment. Please try again.");
-      setComments((currentComments) =>
-        currentComments.filter((comment) => comment.body !== newCommentText)
-      );
-    });
-    
     setNewCommentText("");
+  };
+
+  const handleDelete = (comment_id) => {
+    console.log(comment_id); //click delete after post-shows the hard coded comment_id: 9999; click delete after refresh- shows the generated comment_id
+
+    //setComments((currentComments) => {
+    //   return currentComments.filter((comment) => comment.comment_id !== comment_id);
+    // })
+    setComments((currentComments) =>
+      currentComments.filter((comment) => comment.comment_id !== comment_id)
+    );
+    api.deleteComment(comment_id).catch((error) => {
+      console.error("Failed to delete comment:", error);
+      alert("Failed to delete comment, please try again.");
+      setComments((currentComments) => {
+        // Add the comment back to the state
+        const findCommentById = (id) => {
+          return comments.find((comment) => comment.comment_id === id);
+        };
+        const deletedComment = { comment_id, ...findCommentById(comment_id) };
+        return [...currentComments, deletedComment];
+      });
+    });
   };
 
   return (
@@ -106,7 +143,17 @@ const Article = () => {
               <Card.Body>
                 <Card.Title>{comment.author}</Card.Title>
                 <Card.Text>{comment.body}</Card.Text>
-                <Card.Text>Votes: {comment.votes}</Card.Text>
+                <Card.Text>Votes: {comment.vote}</Card.Text>
+
+                {comment.author === "grumpy19" && (
+                  <button
+                    onClick={() => {
+                      handleDelete(comment.comment_id);
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
               </Card.Body>
             </Card>
           );
@@ -117,3 +164,5 @@ const Article = () => {
 };
 
 export default Article;
+
+//delete:
