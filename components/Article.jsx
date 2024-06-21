@@ -48,8 +48,8 @@ const Article = () => {
     const newComment = {
       body: newCommentText,
       author: "grumpy19",
-      votes: 0,
-      comment_id: 9999999,
+      // votes: 0,
+      // comment_id: 9999999,
     };
     setComments((currentComments) => [newComment, ...currentComments]);
 

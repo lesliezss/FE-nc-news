@@ -39,9 +39,10 @@ const postComment = (article_id, newCommentText) => {
   const postBody = { body: newCommentText, username: "grumpy19" };
   return ncNewsApi
     .post(`/articles/${article_id}/comments`, postBody)
-    .then(({ data }) => {
+    .then((response) => {
       //new generated comment object
-      return data
+      console.log(response)
+      return response.data.comment
     });
 };
 
